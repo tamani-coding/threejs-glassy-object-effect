@@ -67,41 +67,46 @@ scene.environment = envTexture
 scene.background = envTexture
 
 const normalMap = new THREE.TextureLoader().load('assets/Abstract_011_normal.jpg');
-const physicalMaterial = new THREE.MeshPhysicalMaterial({
+
+// for glass objects - ior (reflectivity), thickness, transmission > 0, clearcoat, roughness
+const glassMaterial = new THREE.MeshPhysicalMaterial({
     normalMap: normalMap,
     // color: 0x72147E,
     color: 0xFFFFFF,
 } as THREE.MeshPhysicalMaterialParameters);
-
 // TODO sheen, roughnessMap, transmissionMap, attenuationTint, normalMap, environmentMap
-physicalMaterial.clearcoat = 0.1;
-physicalMaterial.ior = 1.7;
-physicalMaterial.reflectivity = 0.5;
-physicalMaterial.specularIntensity = 0.1;
-physicalMaterial.roughness = 0.1;
-physicalMaterial.thickness = 1;
-physicalMaterial.transmission = 0.77;
-physicalMaterial.metalness = 0.1;
+glassMaterial.clearcoat = 0.1;
+glassMaterial.ior = 1.5;
+// physicalMaterial.reflectivity = 0.5;
+glassMaterial.specularIntensity = 0.1;
+glassMaterial.roughness = 0.1;
+glassMaterial.thickness = 1;
+glassMaterial.transmission = 0.99;
+glassMaterial.metalness = 0.0;
+glassMaterial.sheen = 0.7;
+glassMaterial.sheenColor = new THREE.Color(0xFFFFFF);
 
-// for glass objects - ior (reflectivity), thickness, transmission > 0, clearcoat, roughness
-// for metal objects - transmission = 0, metalness, clearcoat, roughness
 
-materialParams.add(physicalMaterial, 'clearcoat').min(0).max(1);
-materialParams.add(physicalMaterial, 'ior').min(1).max(2.33);
-materialParams.add(physicalMaterial, 'reflectivity').min(0).max(1);
-materialParams.add(physicalMaterial, 'specularIntensity').min(0).max(1);
-materialParams.add(physicalMaterial, 'roughness').min(0).max(1);
-materialParams.add(physicalMaterial, 'thickness').min(0).max(10);
-materialParams.add(physicalMaterial, 'transmission').min(0).max(1);
-materialParams.add(physicalMaterial, 'metalness').min(0).max(1);
+materialParams.add(glassMaterial, 'clearcoat').min(0).max(1);
+materialParams.add(glassMaterial, 'ior').min(1).max(2.33);
+// materialParams.add(physicalMaterial, 'reflectivity').min(0).max(1);
+materialParams.add(glassMaterial, 'specularIntensity').min(0).max(1);
+materialParams.add(glassMaterial, 'roughness').min(0).max(1);
+materialParams.add(glassMaterial, 'thickness').min(0).max(10);
+materialParams.add(glassMaterial, 'transmission').min(0).max(1);
+materialParams.add(glassMaterial, 'metalness').min(0).max(1);
+materialParams.add(glassMaterial, 'sheen').min(0).max(1);
 
 // IcosahedronGeometry
-const object = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), physicalMaterial);
-object.position.z = 2;
-object.position.x = 2;
-object.position.y = 1.5;
-object.castShadow = true;
-scene.add(object);
+const glassObject = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), glassMaterial);
+glassObject.position.z = 2;
+glassObject.position.x = 2;
+glassObject.position.y = 1.5;
+glassObject.castShadow = true;
+scene.add(glassObject);
+
+// for metal objects - transmission = 0, metalness, clearcoat, roughness
+
 
 const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.25), new THREE.MeshPhongMaterial( { color : 0xFF7B54 } ));
 sphere.position.z = 0;
@@ -132,8 +137,8 @@ function animate() {
     TWEEN.update();
 
     const delta = clock.getDelta();
-    object.rotation.x += delta * 0.2;
-    object.rotation.z += delta * 0.2;
+    glassObject.rotation.x += delta * 0.2;
+    glassObject.rotation.z += delta * 0.2;
 
     // object.position.y = 1.5 + Math.sin(Date.now() * 0.005) * 0.15
 
