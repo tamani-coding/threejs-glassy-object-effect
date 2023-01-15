@@ -74,7 +74,7 @@ const params = {
     normalMap: true,
     color: new THREE.Color(0xFFFFFF),
     sheenColor: new THREE.Color(0xFFFFFF),
-    attenuationColor: new THREE.Color(0x82AAE3),
+    attenuationColor: new THREE.Color(0xFFFFFF),
 }
 
 const normalMap = new THREE.TextureLoader().load('assets/Abstract_011_normal.jpg');
