@@ -66,9 +66,11 @@ envTexture.mapping = THREE.CubeReflectionMapping
 scene.environment = envTexture
 scene.background = envTexture
 
-
+const normalMap = new THREE.TextureLoader().load('assets/Abstract_011_normal.jpg');
 const physicalMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0x72147E,
+    normalMap: normalMap,
+    // color: 0x72147E,
+    color: 0xFFFFFF,
 } as THREE.MeshPhysicalMaterialParameters);
 // TODO sheen, roughnessMap, transmissionMap, attenuationTint, normalMap, environmentMap
 physicalMaterial.clearcoat = 0.1;
@@ -89,10 +91,11 @@ materialParams.add(physicalMaterial, 'thickness').min(0).max(10);
 materialParams.add(physicalMaterial, 'transmission').min(0).max(1);
 materialParams.add(physicalMaterial, 'metalness').min(0).max(1);
 
-const object = new THREE.Mesh(new THREE.IcosahedronGeometry(1.0, 0), physicalMaterial);
+// IcosahedronGeometry
+const object = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), physicalMaterial);
 object.position.z = 2;
 object.position.x = 2;
-object.position.y = 1;
+object.position.y = 1.5;
 object.castShadow = true;
 scene.add(object);
 
@@ -128,7 +131,7 @@ function animate() {
     object.rotation.x += delta * 0.2;
     object.rotation.z += delta * 0.2;
 
-    object.position.y = 1.5 + Math.sin(Date.now() * 0.005) * 0.15
+    // object.position.y = 1.5 + Math.sin(Date.now() * 0.005) * 0.15
 
     requestAnimationFrame(animate);
 
