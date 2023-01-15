@@ -72,9 +72,9 @@ scene.environment = envTexture
 scene.background = envTexture
 const params = {
     normalMap: true,
-    color: new THREE.Color(0xFFFFFF),
-    sheenColor: new THREE.Color(0xFFFFFF),
-    attenuationColor: new THREE.Color(0xFFFFFF),
+    color: '#ffffff',
+    sheenColor: '#ffffff',
+    attenuationColor: '#ffffff',
 }
 
 const normalMap = new THREE.TextureLoader().load('assets/Abstract_011_normal.jpg');
@@ -86,7 +86,7 @@ function initGlassObject() {
         // color: 0x72147E,
     } as THREE.MeshPhysicalMaterialParameters);
     // TODO sheen, roughnessMap, transmissionMap, attenuationTint, normalMap, environmentMap
-    glassMaterial.color = params.color;
+    glassMaterial.color = new THREE.Color(params.color.replace('#','0x'));
     glassMaterial.clearcoat = 0.1;
     glassMaterial.ior = 1.15;
     glassMaterial.specularIntensity = 0.1;
@@ -94,8 +94,8 @@ function initGlassObject() {
     glassMaterial.thickness = 0.5;
     glassMaterial.transmission = 1.0;
     glassMaterial.sheen = 1.0;
-    glassMaterial.sheenColor = params.sheenColor;
-    glassMaterial.attenuationColor = params.attenuationColor;
+    glassMaterial.sheenColor = new THREE.Color(params.sheenColor.replace('#','0x'));
+    glassMaterial.attenuationColor = new THREE.Color(params.attenuationColor.replace('#','0x'));
     glassMaterial.attenuationDistance = 0.7;
 
     glassParams.add(glassMaterial, 'clearcoat').min(0).max(1);
@@ -114,13 +114,13 @@ function initGlassObject() {
         glassMaterial.needsUpdate = true;
     });
     glassParams.addColor(params, 'color').onChange( c => {
-        glassMaterial.color = new THREE.Color( c.r / 255, c.g / 255, c.b / 255 );
+        glassMaterial.color = new THREE.Color( parseInt(c.replace('#', '0x')) );
     });
     glassParams.addColor(params, 'sheenColor').onChange( c => {
-        glassMaterial.sheenColor = new THREE.Color( c.r / 255, c.g / 255, c.b / 255 );
+        glassMaterial.sheenColor = new THREE.Color( parseInt(c.replace('#', '0x')) );
     });
     glassParams.addColor(params, 'attenuationColor').onChange( c => {
-        glassMaterial.attenuationColor = new THREE.Color( c.r / 255, c.g / 255, c.b / 255 );
+        glassMaterial.attenuationColor = new THREE.Color( parseInt(c.replace('#', '0x')) );
     });
 
     // IcosahedronGeometry
