@@ -14,7 +14,7 @@ camera.position.set(7, 3, 7);
 // LIGHTS
 scene.add(new THREE.AmbientLight(0xffffff, 0.9));
 
-const spotLight = new THREE.SpotLight(new THREE.Color(0xF7FD04), 0.8);
+const spotLight = new THREE.SpotLight(new THREE.Color(0xF7FD04), 0.8, 15, 4);
 spotLight.position.x = 5;
 spotLight.position.y = 5;
 spotLight.castShadow = true;
@@ -116,11 +116,11 @@ sphere.castShadow = true;
 scene.add(sphere);
 
 
-const plane = new THREE.Mesh(new THREE.PlaneGeometry(10,10), new THREE.MeshPhongMaterial( { color: 0xF54748 } ));
-plane.rotation.x = - Math.PI / 2;
-plane.rotation.x = - Math.PI / 2;
-plane.receiveShadow = true;
-scene.add(plane);
+const ground = new THREE.Mesh(new THREE.BoxGeometry(15,15), new THREE.MeshPhongMaterial( { color: 0xF54748 } ));
+ground.rotation.x = - Math.PI / 2;
+ground.rotation.x = - Math.PI / 2;
+ground.receiveShadow = true;
+scene.add(ground);
 
 animate();
 
