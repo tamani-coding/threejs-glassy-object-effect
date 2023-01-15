@@ -72,6 +72,7 @@ const physicalMaterial = new THREE.MeshPhysicalMaterial({
     // color: 0x72147E,
     color: 0xFFFFFF,
 } as THREE.MeshPhysicalMaterialParameters);
+
 // TODO sheen, roughnessMap, transmissionMap, attenuationTint, normalMap, environmentMap
 physicalMaterial.clearcoat = 0.1;
 physicalMaterial.ior = 1.7;
@@ -81,6 +82,9 @@ physicalMaterial.roughness = 0.1;
 physicalMaterial.thickness = 1;
 physicalMaterial.transmission = 0.77;
 physicalMaterial.metalness = 0.1;
+
+// for glass objects - ior (reflectivity), thickness, transmission > 0, clearcoat, roughness
+// for metal objects - transmission = 0, metalness, clearcoat, roughness
 
 materialParams.add(physicalMaterial, 'clearcoat').min(0).max(1);
 materialParams.add(physicalMaterial, 'ior').min(1).max(2.33);
