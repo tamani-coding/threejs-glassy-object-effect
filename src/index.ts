@@ -71,7 +71,10 @@ envTexture.mapping = THREE.CubeReflectionMapping
 scene.environment = envTexture
 scene.background = envTexture
 const params = {
-    normalMap: true
+    normalMap: true,
+    color: new THREE.Color(0xFFFFFF),
+    sheenColor: new THREE.Color(0xFFFFFF),
+    attenuationColor: new THREE.Color(0x82AAE3),
 }
 
 const normalMap = new THREE.TextureLoader().load('assets/Abstract_011_normal.jpg');
@@ -83,7 +86,7 @@ function initGlassObject() {
         // color: 0x72147E,
     } as THREE.MeshPhysicalMaterialParameters);
     // TODO sheen, roughnessMap, transmissionMap, attenuationTint, normalMap, environmentMap
-    glassMaterial.color = new THREE.Color(0xFFFFFF);
+    glassMaterial.color = params.color;
     glassMaterial.clearcoat = 0.1;
     glassMaterial.ior = 1.15;
     glassMaterial.specularIntensity = 0.1;
@@ -91,8 +94,8 @@ function initGlassObject() {
     glassMaterial.thickness = 0.5;
     glassMaterial.transmission = 1.0;
     glassMaterial.sheen = 1.0;
-    glassMaterial.sheenColor = new THREE.Color(0xFFFFFF);
-    glassMaterial.attenuationColor = new THREE.Color(0x82AAE3);
+    glassMaterial.sheenColor = params.sheenColor;
+    glassMaterial.attenuationColor = params.attenuationColor;
     glassMaterial.attenuationDistance = 0.7;
 
     glassParams.add(glassMaterial, 'clearcoat').min(0).max(1);
@@ -109,6 +112,15 @@ function initGlassObject() {
         else 
             glassMaterial.normalMap = null;
         glassMaterial.needsUpdate = true;
+    });
+    glassParams.addColor(params, 'color').onChange( c => {
+        glassMaterial.color = new THREE.Color( c.r / 255, c.g / 255, c.b / 255 );
+    });
+    glassParams.addColor(params, 'sheenColor').onChange( c => {
+        glassMaterial.sheenColor = new THREE.Color( c.r / 255, c.g / 255, c.b / 255 );
+    });
+    glassParams.addColor(params, 'attenuationColor').onChange( c => {
+        glassMaterial.attenuationColor = new THREE.Color( c.r / 255, c.g / 255, c.b / 255 );
     });
 
     // IcosahedronGeometry
