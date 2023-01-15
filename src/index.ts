@@ -70,6 +70,9 @@ const envTexture = new THREE.CubeTextureLoader().load([
 envTexture.mapping = THREE.CubeReflectionMapping
 scene.environment = envTexture
 scene.background = envTexture
+const params = {
+    normalMap: true
+}
 
 const normalMap = new THREE.TextureLoader().load('assets/Abstract_011_normal.jpg');
 
@@ -78,17 +81,19 @@ function initGlassObject() {
     const glassMaterial = new THREE.MeshPhysicalMaterial({
         normalMap: normalMap,
         // color: 0x72147E,
-        color: 0xFFFFFF,
     } as THREE.MeshPhysicalMaterialParameters);
     // TODO sheen, roughnessMap, transmissionMap, attenuationTint, normalMap, environmentMap
+    glassMaterial.color = new THREE.Color(0xFFFFFF);
     glassMaterial.clearcoat = 0.1;
-    glassMaterial.ior = 1.5;
+    glassMaterial.ior = 1.15;
     glassMaterial.specularIntensity = 0.1;
     glassMaterial.roughness = 0.1;
-    glassMaterial.thickness = 1;
-    glassMaterial.transmission = 0.99;
-    glassMaterial.sheen = 0.9;
+    glassMaterial.thickness = 0.5;
+    glassMaterial.transmission = 1.0;
+    glassMaterial.sheen = 1.0;
     glassMaterial.sheenColor = new THREE.Color(0xFFFFFF);
+    glassMaterial.attenuationColor = new THREE.Color(0x82AAE3);
+    glassMaterial.attenuationDistance = 0.7;
 
     glassParams.add(glassMaterial, 'clearcoat').min(0).max(1);
     glassParams.add(glassMaterial, 'ior').min(1).max(2.33);
@@ -97,6 +102,14 @@ function initGlassObject() {
     glassParams.add(glassMaterial, 'thickness').min(0).max(10);
     glassParams.add(glassMaterial, 'transmission').min(0).max(1);
     glassParams.add(glassMaterial, 'sheen').min(0).max(1);
+    glassParams.add(glassMaterial, 'attenuationDistance').min(0).max(3);
+    glassParams.add(params, 'normalMap').name('normal map').onChange( (v) => {
+        if (params.normalMap)
+            glassMaterial.normalMap = normalMap;
+        else 
+            glassMaterial.normalMap = null;
+        glassMaterial.needsUpdate = true;
+    });
 
     // IcosahedronGeometry
     glassObject = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), glassMaterial);
