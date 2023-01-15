@@ -51,12 +51,8 @@ controls.update();
 
 // GUI
 const gui = new GUI();
-// const stencilParams = gui.addFolder('stencilParams');
-// stencilParams.add(params.stencilMesh, 'z').min(- 1).max(1).onChange(d => {
-//         stencilMesh.position.z = d
-//         stencilHelper.update();
-// });
-// stencilParams.open();
+const materialParams = gui.addFolder('physical-material-params');
+materialParams.open();
 
 const envTexture = new THREE.CubeTextureLoader().load([
     'assets/pos-x.png',
@@ -71,21 +67,34 @@ scene.environment = envTexture
 scene.background = envTexture
 
 
-const highlightedMaterial = new THREE.MeshPhysicalMaterial({
-    // thickness: 1.0,
-    roughness: 0.1,
-    clearcoat: 0.1,
-    transmission: 0.77,
-    ior: 1.7,
+const physicalMaterial = new THREE.MeshPhysicalMaterial({
     color: 0x72147E,
 } as THREE.MeshPhysicalMaterialParameters);
+// TODO sheen, roughnessMap, transmissionMap, attenuationTint, normalMap, environmentMap
+physicalMaterial.clearcoat = 0.1;
+physicalMaterial.ior = 1.7;
+physicalMaterial.reflectivity = 0.5;
+physicalMaterial.specularIntensity = 0.1;
+physicalMaterial.roughness = 0.1;
+physicalMaterial.thickness = 1;
+physicalMaterial.transmission = 0.77;
+physicalMaterial.metalness = 0.1;
 
-const octahedron = new THREE.Mesh(new THREE.OctahedronGeometry(1.0, 0), highlightedMaterial);
-octahedron.position.z = 2;
-octahedron.position.x = 2;
-octahedron.position.y = 1;
-octahedron.castShadow = true;
-scene.add(octahedron);
+materialParams.add(physicalMaterial, 'clearcoat').min(0).max(1);
+materialParams.add(physicalMaterial, 'ior').min(1).max(2.33);
+materialParams.add(physicalMaterial, 'reflectivity').min(0).max(1);
+materialParams.add(physicalMaterial, 'specularIntensity').min(0).max(1);
+materialParams.add(physicalMaterial, 'roughness').min(0).max(1);
+materialParams.add(physicalMaterial, 'thickness').min(0).max(10);
+materialParams.add(physicalMaterial, 'transmission').min(0).max(1);
+materialParams.add(physicalMaterial, 'metalness').min(0).max(1);
+
+const object = new THREE.Mesh(new THREE.IcosahedronGeometry(1.0, 0), physicalMaterial);
+object.position.z = 2;
+object.position.x = 2;
+object.position.y = 1;
+object.castShadow = true;
+scene.add(object);
 
 const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.25), new THREE.MeshPhongMaterial( { color : 0xFF7B54 } ));
 sphere.position.z = 0;
@@ -116,9 +125,10 @@ function animate() {
     TWEEN.update();
 
     const delta = clock.getDelta();
-    octahedron.rotation.y += delta * 0.1;
+    object.rotation.x += delta * 0.2;
+    object.rotation.z += delta * 0.2;
 
-    octahedron.position.y = 1.5 + Math.sin(Date.now() * 0.005) * 0.15
+    object.position.y = 1.5 + Math.sin(Date.now() * 0.005) * 0.15
 
     requestAnimationFrame(animate);
 
