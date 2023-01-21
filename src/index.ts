@@ -54,19 +54,13 @@ const gui = new GUI();
 const glassParams = gui.addFolder('glass-material-params');
 glassParams.open();
 
-let glassObject, glassObject2;
+let sphere, icosahedron;
 
-const envTexture = new THREE.CubeTextureLoader().load([
-    'assets/pos-x.png',
-    'assets/neg-x.png',
-    'assets/pos-y.png',
-    'assets/neg-y.png',
-    'assets/pos-z.png',
-    'assets/neg-z.png',
-])
-envTexture.mapping = THREE.CubeReflectionMapping
-scene.environment = envTexture
-scene.background = envTexture
+const envTexture = new THREE.TextureLoader().load(
+    "assets/chinese_garden.png"
+);
+envTexture.mapping = THREE.EquirectangularReflectionMapping; 
+
 const params = {
     normalMap: true,
     color: '#ffffff',
@@ -78,36 +72,44 @@ const loader = new THREE.TextureLoader();
 const normalMap = loader.load('assets/Abstract_011_normal.jpg');
 
 const background = loader.load('assets/tokyo.png');
-
 const backgroundMesh = new THREE.Mesh(new THREE.PlaneGeometry(15,10), new THREE.MeshPhongMaterial({ map: background }));
 backgroundMesh.rotation.y = Math.PI / 4;
 backgroundMesh.position.y = 5;
+backgroundMesh.position.x = -1;
+backgroundMesh.position.z = -1;
 backgroundMesh.receiveShadow = true;
 scene.add(backgroundMesh);
 
 function initGlassObject() {
-    // for glass objects - ior (reflectivity), thickness, transmission > 0, clearcoat, roughness
+
     const glassMaterial = new THREE.MeshPhysicalMaterial({
         normalMap: normalMap,
+        envMap: envTexture,
     } as THREE.MeshPhysicalMaterialParameters);
-    // TODO sheen, roughnessMap, transmissionMap, attenuationTint, normalMap, environmentMap
+
     glassMaterial.color = new THREE.Color(params.color.replace('#','0x'));
-    glassMaterial.clearcoat = 0.1;
+    glassMaterial.clearcoat = 0.8;
     glassMaterial.ior = 1.15;
-    glassMaterial.specularIntensity = 0.1;
-    glassMaterial.roughness = 0.1;
+    glassMaterial.specularIntensity = 0.6;
+    glassMaterial.roughness = 0.0;
     glassMaterial.thickness = 0.5;
     glassMaterial.transmission = 1.0;
-    glassMaterial.sheen = 1.0;
+    glassMaterial.sheen = 0.0;
     glassMaterial.sheenColor = new THREE.Color(params.sheenColor.replace('#','0x'));
 
-    glassParams.add(glassMaterial, 'clearcoat').min(0).max(1);
+    glassParams.addColor(params, 'color').onChange( c => {
+        glassMaterial.color = new THREE.Color( parseInt(c.replace('#', '0x')) );
+    });
+    glassParams.add(glassMaterial, 'transmission').min(0).max(1);
     glassParams.add(glassMaterial, 'ior').min(1).max(2.33);
+    glassParams.add(glassMaterial, 'thickness').min(0).max(10);
+    glassParams.add(glassMaterial, 'clearcoat').min(0).max(1);
     glassParams.add(glassMaterial, 'specularIntensity').min(0).max(1);
     glassParams.add(glassMaterial, 'roughness').min(0).max(1);
-    glassParams.add(glassMaterial, 'thickness').min(0).max(10);
-    glassParams.add(glassMaterial, 'transmission').min(0).max(1);
     glassParams.add(glassMaterial, 'sheen').min(0).max(1);
+    glassParams.addColor(params, 'sheenColor').onChange( c => {
+        glassMaterial.sheenColor = new THREE.Color( parseInt(c.replace('#', '0x')) );
+    });
     glassParams.add(params, 'normalMap').name('normal map').onChange( (v) => {
         if (params.normalMap)
             glassMaterial.normalMap = normalMap;
@@ -115,27 +117,19 @@ function initGlassObject() {
             glassMaterial.normalMap = null;
         glassMaterial.needsUpdate = true;
     });
-    glassParams.addColor(params, 'color').onChange( c => {
-        glassMaterial.color = new THREE.Color( parseInt(c.replace('#', '0x')) );
-    });
-    glassParams.addColor(params, 'sheenColor').onChange( c => {
-        glassMaterial.sheenColor = new THREE.Color( parseInt(c.replace('#', '0x')) );
-    });
+    sphere = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), glassMaterial);
+    sphere.position.z = 2;
+    sphere.position.x = 2;
+    sphere.position.y = 3;
+    sphere.castShadow = true;
+    scene.add(sphere);
 
-    // IcosahedronGeometry
-    glassObject = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), glassMaterial);
-    glassObject.position.z = 2;
-    glassObject.position.x = 2;
-    glassObject.position.y = 3;
-    glassObject.castShadow = true;
-    scene.add(glassObject);
-
-    glassObject2 = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 0), glassMaterial);
-    glassObject2.position.z = 0;
-    glassObject2.position.x = 4;
-    glassObject2.position.y = 3;
-    glassObject2.castShadow = true;
-    scene.add(glassObject2);
+    icosahedron = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 0), glassMaterial);
+    icosahedron.position.z = 0;
+    icosahedron.position.x = 4;
+    icosahedron.position.y = 3;
+    icosahedron.castShadow = true;
+    scene.add(icosahedron);
 }
 
 initGlassObject();
@@ -162,13 +156,13 @@ function animate() {
 
     const delta = clock.getDelta();
 
-    if (glassObject) {
-        glassObject.rotation.x += delta * 0.2;
-        glassObject.rotation.z += delta * 0.2;
+    if (sphere) {
+        sphere.rotation.x += delta * 0.2;
+        sphere.rotation.z += delta * 0.2;
     }
-    if (glassObject2) {
-        glassObject2.rotation.x -= delta * 0.2;
-        glassObject2.rotation.z -= delta * 0.2;
+    if (icosahedron) {
+        icosahedron.rotation.x -= delta * 0.2;
+        icosahedron.rotation.z -= delta * 0.2;
     }
 
     requestAnimationFrame(animate);
