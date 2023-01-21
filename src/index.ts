@@ -54,7 +54,7 @@ const gui = new GUI();
 const glassParams = gui.addFolder('glass-material-params');
 glassParams.open();
 
-let glassObject;
+let glassObject, glassObject2;
 
 const envTexture = new THREE.CubeTextureLoader().load([
     'assets/pos-x.png',
@@ -82,6 +82,7 @@ const background = loader.load('assets/tokyo.png');
 const backgroundMesh = new THREE.Mesh(new THREE.PlaneGeometry(15,10), new THREE.MeshPhongMaterial({ map: background }));
 backgroundMesh.rotation.y = Math.PI / 4;
 backgroundMesh.position.y = 5;
+backgroundMesh.receiveShadow = true;
 scene.add(backgroundMesh);
 
 function initGlassObject() {
@@ -99,8 +100,6 @@ function initGlassObject() {
     glassMaterial.transmission = 1.0;
     glassMaterial.sheen = 1.0;
     glassMaterial.sheenColor = new THREE.Color(params.sheenColor.replace('#','0x'));
-    glassMaterial.attenuationColor = new THREE.Color(params.attenuationColor.replace('#','0x'));
-    glassMaterial.attenuationDistance = 0.7;
 
     glassParams.add(glassMaterial, 'clearcoat').min(0).max(1);
     glassParams.add(glassMaterial, 'ior').min(1).max(2.33);
@@ -109,7 +108,6 @@ function initGlassObject() {
     glassParams.add(glassMaterial, 'thickness').min(0).max(10);
     glassParams.add(glassMaterial, 'transmission').min(0).max(1);
     glassParams.add(glassMaterial, 'sheen').min(0).max(1);
-    glassParams.add(glassMaterial, 'attenuationDistance').min(0).max(100);
     glassParams.add(params, 'normalMap').name('normal map').onChange( (v) => {
         if (params.normalMap)
             glassMaterial.normalMap = normalMap;
@@ -123,9 +121,6 @@ function initGlassObject() {
     glassParams.addColor(params, 'sheenColor').onChange( c => {
         glassMaterial.sheenColor = new THREE.Color( parseInt(c.replace('#', '0x')) );
     });
-    glassParams.addColor(params, 'attenuationColor').onChange( c => {
-        glassMaterial.attenuationColor = new THREE.Color( parseInt(c.replace('#', '0x')) );
-    });
 
     // IcosahedronGeometry
     glassObject = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), glassMaterial);
@@ -134,18 +129,16 @@ function initGlassObject() {
     glassObject.position.y = 3;
     glassObject.castShadow = true;
     scene.add(glassObject);
+
+    glassObject2 = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 0), glassMaterial);
+    glassObject2.position.z = 0;
+    glassObject2.position.x = 4;
+    glassObject2.position.y = 3;
+    glassObject2.castShadow = true;
+    scene.add(glassObject2);
 }
 
 initGlassObject();
-// initMetalObject();
-
-const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.25), new THREE.MeshPhongMaterial({ color: 0xFF7B54 }));
-sphere.position.z = 5;
-sphere.position.x = 3;
-sphere.position.y = 1;
-sphere.castShadow = true;
-scene.add(sphere);
-
 
 const ground = new THREE.Mesh(new THREE.BoxGeometry(15, 15), new THREE.MeshPhongMaterial({ color: 0xF54748 }));
 ground.rotation.x = - Math.PI / 2;
@@ -172,6 +165,10 @@ function animate() {
     if (glassObject) {
         glassObject.rotation.x += delta * 0.2;
         glassObject.rotation.z += delta * 0.2;
+    }
+    if (glassObject2) {
+        glassObject2.rotation.x -= delta * 0.2;
+        glassObject2.rotation.z -= delta * 0.2;
     }
 
     requestAnimationFrame(animate);
