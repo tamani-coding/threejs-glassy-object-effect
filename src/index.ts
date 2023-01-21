@@ -22,17 +22,6 @@ spotLight.shadow.mapSize.width = 2048;
 spotLight.shadow.mapSize.height = 2048;
 scene.add(spotLight);
 
-// const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-// dirLight.position.set(5, 10, 7.5);
-// dirLight.castShadow = true;
-// dirLight.shadow.camera.right = 3;
-// dirLight.shadow.camera.left = - 3;
-// dirLight.shadow.camera.top = 3;
-// dirLight.shadow.camera.bottom = - 3;
-// dirLight.shadow.mapSize.width = 1024;
-// dirLight.shadow.mapSize.height = 1024;
-// scene.add(dirLight);
-
 // RENDERER
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.shadowMap.enabled = true;
@@ -41,7 +30,6 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x453C67);
 window.addEventListener('resize', onWindowResize);
 document.body.appendChild(renderer.domElement);
-
 
 // CONTROLS
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -56,11 +44,6 @@ glassParams.open();
 
 let sphere, icosahedron;
 
-const envTexture = new THREE.TextureLoader().load(
-    "assets/chinese_garden.png"
-);
-envTexture.mapping = THREE.EquirectangularReflectionMapping; 
-
 const params = {
     normalMap: true,
     color: '#ffffff',
@@ -69,6 +52,12 @@ const params = {
 }
 
 const loader = new THREE.TextureLoader();
+
+const envTexture = loader.load(
+    "assets/chinese_garden.png"
+);
+envTexture.mapping = THREE.EquirectangularReflectionMapping; 
+
 const normalMap = loader.load('assets/Abstract_011_normal.jpg');
 
 const background = loader.load('assets/tokyo.png');
@@ -87,7 +76,7 @@ function initGlassObject() {
         envMap: envTexture,
     } as THREE.MeshPhysicalMaterialParameters);
 
-    glassMaterial.color = new THREE.Color(params.color.replace('#','0x'));
+    glassMaterial.color = new THREE.Color( parseInt(params.color.replace('#','0x')) );
     glassMaterial.clearcoat = 0.8;
     glassMaterial.ior = 1.15;
     glassMaterial.specularIntensity = 0.6;
@@ -95,7 +84,7 @@ function initGlassObject() {
     glassMaterial.thickness = 0.5;
     glassMaterial.transmission = 1.0;
     glassMaterial.sheen = 0.0;
-    glassMaterial.sheenColor = new THREE.Color(params.sheenColor.replace('#','0x'));
+    glassMaterial.sheenColor = new THREE.Color( parseInt(params.sheenColor.replace('#','0x')) );
 
     glassParams.addColor(params, 'color').onChange( c => {
         glassMaterial.color = new THREE.Color( parseInt(c.replace('#', '0x')) );
