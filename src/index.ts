@@ -45,7 +45,7 @@ glassParams.open();
 let sphere, icosahedron;
 
 const params = {
-    normalMap: true,
+    normalMap: false,
     color: '#ffffff',
     sheenColor: '#ffffff',
     attenuationColor: '#ffffff',
@@ -72,7 +72,6 @@ scene.add(backgroundMesh);
 function initGlassObject() {
 
     const glassMaterial = new THREE.MeshPhysicalMaterial({
-        normalMap: normalMap,
         envMap: envTexture,
     } as THREE.MeshPhysicalMaterialParameters);
 
